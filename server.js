@@ -10,6 +10,21 @@ const helpers = require("./utils/helper");
 const PORT = process.env.PORT || 3001;
 const app = express();
 
+const session = require("express-session");
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
+
+const sess = {
+  secret: "Super secret secret",
+  cookie: {},
+  resave: false,
+  saveUninitialized: true,
+  store: new SequelizeStore({
+    db: sequelize,
+  }),
+};
+
+app.use(session(sess));
+
 const hbs = exphbs.create({ helpers });
 
 app.engine("handlebars", hbs.engine);
@@ -27,18 +42,3 @@ sequelize.sync({ force: false }).then(() => {
     sequelize.sync({ force: false });
   });
 });
-
-const session = require("express-session");
-const SequelizeStore = require("connect-session-sequelize")(session.Store);
-
-const sess = {
-  secret: "Super secret secret",
-  cookie: {},
-  resave: false,
-  saveUninitialized: true,
-  store: new SequelizeStore({
-    db: sequelize,
-  }),
-};
-
-app.use(session(sess));
